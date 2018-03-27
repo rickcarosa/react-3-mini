@@ -12,7 +12,8 @@ class App extends Component {
 
     this.state = {
       vehiclesToDisplay: [],
-      buyersToDisplay: []
+      buyersToDisplay: [],
+      baseUrl: 'https://joes-autos.herokuapp.com/api'
     };
 
     this.getVehicles = this.getVehicles.bind( this );
@@ -28,19 +29,41 @@ class App extends Component {
     this.deleteBuyer = this.deleteBuyer.bind( this );
   }
 
+  componentDidMount(){                    // this is the first function that is fired once the page is opened
+    this.getVehicles();                   // getVehicles will be invoked right when page loads
+  }
+
   getVehicles() {
     // axios (GET)
     // setState with response -> vehiclesToDisplay
+    let promise = axios.get(`${this.state.baseUrl}/vehicles`)     // can take off let promise and promise below and chain the .then on the axios.get line
+    promise.then( res => {                                        //res for response
+      this.setState({
+        vehiclesToDisplay: res.data
+      })
+    })
   }
 
   getPotentialBuyers() {
     // axios (GET)
     // setState with response -> buyersToDisplay
+    let promise = axios.get(`${this.state.baseUrl}/buyers`)
+    promise.then( res => {
+      this.setState({
+        buyersToDisplay: res.data
+      })
+    })
   }
 
   sellCar( id ) {
     // axios (DELETE)
     // setState with response -> vehiclesToDisplay
+    let promise = axios.delete(`${this.state.baseUrl}/vehicles/${id}`)
+    promise.then( res => {
+      this.setState({
+        vehiclesToDisplay: res.data.vehicles
+      })
+    })
   }
 
   filterByMake() {
@@ -52,14 +75,25 @@ class App extends Component {
 
   filterByColor() {
     let color = this.refs.selectedColor.value;
-
     // axios (GET)
     // setState with response -> vehiclesToDisplay
+    let promise = axios.get(`${this.state.baseUrl}/vehicles?color=${color}`) //query with ?
+    promise.then( res => {
+      this.setState({
+        vehiclesToDisplay: res.data
+      })
+    })
   }
 
   updatePrice( priceChange, id ) {
     // axios (PUT)
     // setState with response -> vehiclesToDisplay
+    let promise = axios.put(`${this.state.baseUrl}/vehicles/${id}/${priceChange}`)
+    promise.then( res => {
+      this.setState({
+        vehiclesToDisplay: res.data.vehicles
+      })
+    })
   }
 
   addCar() {
@@ -72,7 +106,13 @@ class App extends Component {
     };
 
     // axios (POST)
-    // setState with response -> vehiclesToDisplay
+    // setState with response -> vehiclesToDisplay // to send body you make it the second parameter
+    let promise = axios.post(`${this.state.baseUrl}/vehicles`, newCar)
+    promise.then( res => {
+      this.setState({
+        vehiclesToDisplay: res.data.vehicles
+      })
+    })
   }
 
   addBuyer() {
@@ -84,6 +124,12 @@ class App extends Component {
 
     //axios (POST)
     // setState with response -> buyersToDisplay
+    let promise = axios.post(`${this.state.baseUrl}/buyers`, newBuyer)
+    promise.then( res => {
+      this.setState({
+        buyersToDisplay: res.data.buyersToDisplay
+      })
+    })
   }
 
   deleteBuyer( id ) {
